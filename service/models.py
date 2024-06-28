@@ -27,9 +27,6 @@ class YourResourceModel(db.Model):
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
-    product_id = db.Column(db.Integer, nullable=False)
-    recommended_product_id = db.Column(db.Integer, nullable=False)
-    recommendation_type = db.Column(db.String(63), nullable=False)
 
     # Todo: Place the rest of your schema here...
 

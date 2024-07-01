@@ -21,9 +21,9 @@ This service implements a REST API that allows you to Create, Read, Update
 and Delete Pets from the inventory of pets in the PetShop
 """
 
-from flask import jsonify, request, url_for, abort
+from flask import jsonify, request, url_for, abort, make_response
 from flask import current_app as app  # Import Flask application
-from service.models import YourResourceModel
+from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
 
 
@@ -32,7 +32,7 @@ from service.common import status  # HTTP Status Codes
 ######################################################################
 @app.route("/")
 def index():
-    """ Root URL response """
+    """Root URL response"""
     return (
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
@@ -43,4 +43,20 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Todo: Place your REST API code here ...
+
+######################################################################
+# CREATE A NEW RECOMMENDATION
+######################################################################
+@app.route("/recommendations", methods=["POST"])
+def create_recommendations():
+    """
+    Creates a recommendation
+    This endpoint will create a recommendation based the data in the body that is posted
+    """
+    app.logger.info("Request to create a recommendation")
+    # check_content_type("application/json")
+    recommendation = Recommendation()
+    recommendation.deserialize(request.get_json())
+    message = recommendation.serialize()
+    ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+    return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})

@@ -45,18 +45,25 @@ def index():
 
 
 ######################################################################
-# CREATE A NEW RECOMMENDATION
+# LIST/CREATE RECOMMENDATIONS
 ######################################################################
-@app.route("/recommendations", methods=["POST"])
-def create_recommendations():
+@app.route("/recommendations", methods=["GET","POST"])
+def handle_recommendations():
     """
     Creates a recommendation
+    or lists all recommendations
     This endpoint will create a recommendation based the data in the body that is posted
+    or if it is a get request, it will list all recommendations
     """
-    app.logger.info("Request to create a recommendation")
-    # check_content_type("application/json")
-    recommendation = Recommendation()
-    recommendation.deserialize(request.get_json())
-    message = recommendation.serialize()
-    ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
-    return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
+    if(request.method == "POST"):
+        app.logger.info("Request to create a recommendation")
+        # check_content_type("application/json")
+        recommendation = Recommendation()
+        recommendation.deserialize(request.get_json())
+        message = recommendation.serialize()
+        ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+        return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
+    elif(request.method == "GET"):
+        app.logger.info("Request to list all recommendations")
+        pass
+        

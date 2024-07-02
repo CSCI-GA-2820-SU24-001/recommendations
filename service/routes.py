@@ -45,25 +45,43 @@ def index():
 
 
 ######################################################################
-# LIST/CREATE RECOMMENDATIONS
+# CREATE RECOMMENDATIONS
 ######################################################################
-@app.route("/recommendations", methods=["GET","POST"])
-def handle_recommendations():
+@app.route("/recommendations", methods=["POST"])
+def create_recommendations():
     """
     Creates a recommendation
-    or lists all recommendations
     This endpoint will create a recommendation based the data in the body that is posted
-    or if it is a get request, it will list all recommendations
     """
-    if(request.method == "POST"):
-        app.logger.info("Request to create a recommendation")
-        # check_content_type("application/json")
-        recommendation = Recommendation()
-        recommendation.deserialize(request.get_json())
-        message = recommendation.serialize()
-        ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
-        return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
-    elif(request.method == "GET"):
-        app.logger.info("Request to list all recommendations")
-        pass
+    app.logger.info("Request to create a recommendation")
+    # check_content_type("application/json")
+    recommendation = Recommendation()
+    recommendation.deserialize(request.get_json())
+    message = recommendation.serialize()
+    ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+    return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
+
+######################################################################
+# LIST RECOMMENDATIONS
+######################################################################
+
+@app.route("/recommendations", methods=["GET"])
+def list_recommendations():
+    """Returns all of the Recommendations"""
+    app.logger.info("Request for recommendations")
+    recommendations = Recommendation.all()
+    results = [recommendation.serialize() for recommendation in recommendations]
+    return make_response(jsonify(results), status.HTTP_200_OK)
         
+######################################################################
+# DELETE RECOMMENDATIONS
+######################################################################
+
+@app.route("/recommendations/<int:id>", methods=["DELETE"])
+def delete_recommendations(id):
+    """Deletes a Recommendation from the database"""
+    app.logger.info("Request to delete recommendation with id: %s", id)
+    recommendation = Recommendation.find(id)
+    if recommendation:
+        recommendation.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)

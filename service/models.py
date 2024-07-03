@@ -17,6 +17,10 @@ class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
 
+class PrimaryKeyNotSetError(Exception):
+    """Used when tried to set primary key to None"""
+
+
 class Recommendation(db.Model):
     """
     Class that represents a Recommendation

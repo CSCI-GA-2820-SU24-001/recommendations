@@ -48,6 +48,8 @@ class Recommendation(db.Model):
     def update(self):
         logger.info("Updating %s", self.name)
         try:
+            if self.id is None:
+                raise PrimaryKeyNotSetError()
             db.session.commit()
         except Exception as e:
             db.session.rollback()

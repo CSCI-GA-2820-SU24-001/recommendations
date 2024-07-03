@@ -31,8 +31,6 @@ class Recommendation(db.Model):
     recommended_product_id = db.Column(db.Integer, nullable=False)
     recommendation_type = db.Column(db.String(63), nullable=False)
 
-    # Todo: Place the rest of your schema here...
-
     def __repr__(self):
         return f"<Recommendation {self.name} id=[{self.id}]>"
 

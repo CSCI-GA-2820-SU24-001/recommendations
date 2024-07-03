@@ -15,10 +15,10 @@
 ######################################################################
 
 """
-Pet Store Service
+Recommendation Service
 
 This service implements a REST API that allows you to Create, Read, Update
-and Delete Pets from the inventory of pets in the PetShop
+and Delete Recommendations from the inventory of pets in the PetShop
 """
 
 from flask import jsonify, request, url_for, abort, make_response
@@ -34,7 +34,7 @@ from service.common import status  # HTTP Status Codes
 def index():
     """Root URL response"""
     return (
-        "Reminder: return some useful information in json format about the service here",
+        "This is the home page",
         status.HTTP_200_OK,
     )
 
@@ -58,13 +58,13 @@ def create_recommendations():
     recommendation = Recommendation()
     recommendation.deserialize(request.get_json())
     message = recommendation.serialize()
-    ## location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+    # location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
     return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
+
 
 ######################################################################
 # LIST RECOMMENDATIONS
 ######################################################################
-
 @app.route("/recommendations", methods=["GET"])
 def list_recommendations():
     """Returns all of the Recommendations"""
@@ -72,11 +72,11 @@ def list_recommendations():
     recommendations = Recommendation.all()
     results = [recommendation.serialize() for recommendation in recommendations]
     return make_response(jsonify(results), status.HTTP_200_OK)
-        
+
+
 ######################################################################
 # DELETE RECOMMENDATIONS
 ######################################################################
-
 @app.route("/recommendations/<int:id>", methods=["DELETE"])
 def delete_recommendations(id):
     """Deletes a Recommendation from the database"""

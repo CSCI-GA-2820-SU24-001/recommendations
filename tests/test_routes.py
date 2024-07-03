@@ -1,12 +1,14 @@
 """
 TestRecommendation API Service Test Suite
 """
+
 import os
 import logging
 from unittest import TestCase
 from wsgi import app
 from service.common import status
 from service.models import db, Recommendation
+from .factories import RecommendationFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -18,7 +20,7 @@ DATABASE_URI = os.getenv(
 ######################################################################
 # pylint: disable=too-many-public-methods
 class TestYourResourceService(TestCase):
-    """ REST API Server Tests """
+    """REST API Server Tests"""
 
     @classmethod
     def setUpClass(cls):
@@ -42,7 +44,7 @@ class TestYourResourceService(TestCase):
         db.session.commit()
 
     def tearDown(self):
-        """ This runs after each test """
+        """This runs after each test"""
         db.session.remove()
 
     ######################################################################
@@ -50,8 +52,47 @@ class TestYourResourceService(TestCase):
     ######################################################################
 
     def test_index(self):
-        """ It should call the home page """
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        """It should call the Home Page"""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            b"This is the home page",
+            response.data,
+        )
 
-    # Todo: Add your test cases here...
+    def test_create_recommendation(self):
+        """It should Create a new Recommendation"""
+        recommendation = RecommendationFactory()
+        response = self.client.post(
+            "/recommendations",
+            json=recommendation.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json["name"], recommendation.name)
+        self.assertEqual(response.json["product_id"], recommendation.product_id)
+        self.assertEqual(
+            response.json["recommended_product_id"],
+            recommendation.recommended_product_id,
+        )
+        self.assertEqual(
+            response.json["recommendation_type"], recommendation.recommendation_type
+        )
+
+    def test_list_recommendations(self):
+        """It should List all Recommendations"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        response = self.client.get("/recommendations")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["name"], recommendation.name)
+
+    def test_delete_recommendation(self):
+        """It should Delete a Recommendation"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        response = self.client.delete(f"/recommendations/{recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertIsNone(Recommendation.find(recommendation.id))

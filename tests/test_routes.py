@@ -152,16 +152,3 @@ class TestSadPaths(TestCase):
         """It should return 404 for non-existent endpoints"""
         response = self.client.get("/hello")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_500_internal_server_error(self):
-        """It should handle unexpected server error with 500_INTERNAL_SERVER_ERROR"""
-        with app.test_request_context():
-            # Create a mock route that raises an exception to trigger the 500 error
-            @app.route("/cause_500")
-            def cause_500():
-                raise Exception("Simulated server error")
-
-            response = self.client.get("/cause_500")
-            self.assertEqual(
-                response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
-            )

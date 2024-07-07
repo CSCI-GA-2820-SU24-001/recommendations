@@ -32,10 +32,12 @@ def create_app():
     # Create Flask application
     app = Flask(__name__)
     app.config.from_object(config)
+    app.debug = True
 
     # Initialize Plugins
     # pylint: disable=import-outside-toplevel
     from service.models import db
+
     db.init_app(app)
 
     with app.app_context():

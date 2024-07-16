@@ -20,11 +20,12 @@ Recommendation Service
 This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of pets in the PetShop
 """
-
 from flask import jsonify, request, url_for, abort, make_response
 from flask import current_app as app  # Import Flask application
 from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
+from sqlalchemy import text  # Import the text function
+from service.models import db  # for check endpoints
 
 
 ######################################################################
@@ -85,3 +86,24 @@ def delete_recommendations(id):
     if recommendation:
         recommendation.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+@app.route("/health/liveness", methods=["GET"])
+def liveness():
+    """Endpoint to check if the application is alive"""
+    app.logger.info("Liveness check performed")
+    return jsonify(status="OK"), 200
+
+
+@app.route("/health/readiness", methods=["GET"])
+def readiness():
+    """Endpoint to check if the application is ready to serve"""
+    try:
+        # Attempt to make a simple query to ensure database connectivity
+        sql = text("select 1")
+        db.session.execute(sql)
+        app.logger.info("Readiness check performed")
+        return jsonify(status="OK"), 200
+    except Exception as e:
+        app.logger.error(f"Readiness check failed: {e}")
+        return jsonify(status="ERROR", message=str(e)), 500

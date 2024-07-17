@@ -1,4 +1,5 @@
 name: CI Build
+
 on:
   push:
     branches:
@@ -15,12 +16,15 @@ jobs:
     # Required services    
     services:
       # Label used to access the service container
-      redis:
+      postgres:
         # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: pgs3cr3t
         options: >-
-          --health-cmd "redis-cli ping"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -38,9 +42,9 @@ jobs:
           poetry install
 
       - name: Run unit tests with PyTest
-        run: coverage run -m pytest
+        run: pytest --pspec --cov=service --cov-fail-under=95
         env:
-          DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres"
+          DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@localhost:5432/postgres"
       
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3.1.4

@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nyu-project-deployment
+  labels:
+    app: nyu-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nyu-project
+  template:
+    metadata:
+      labels:
+        app: nyu-project
+    spec:
+      containers:
+      - name: recommendations_devcontainer
+        image: recommendations_devcontainer-app
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: FLASK_APP
+          value: "wsgi:app"
+        - name: FLASK_DEBUG
+          value: "True"
+        - name: GUNICORN_BIND
+          value: "0.0.0.0:8080"
+        - name: DATABASE_URI
+          value: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres"
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: recommendations_devcontainer-postgres-1
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: pgs3cr3t
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi

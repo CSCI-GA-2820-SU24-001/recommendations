@@ -88,11 +88,21 @@ def delete_recommendations(id):
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
+######################################################################
+# Liveness Health Checkpoint
+######################################################################
+
+
 @app.route("/health/liveness", methods=["GET"])
 def liveness():
     """Endpoint to check if the application is alive"""
     app.logger.info("Liveness check performed")
     return jsonify(status="OK"), 200
+
+
+######################################################################
+# Readiness Health Checkpoints
+######################################################################
 
 
 @app.route("/health/readiness", methods=["GET"])

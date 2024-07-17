@@ -38,7 +38,7 @@ jobs:
           poetry install
 
       - name: Run unit tests with PyTest
-        run: pytest --pspec --cov=service #--cov-fail-under=95
+        run: coverage run -m pytest
         env:
           DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres"
       

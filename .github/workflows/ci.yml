@@ -1,5 +1,4 @@
 name: CI Build
-
 on:
   push:
     branches:
@@ -17,14 +16,15 @@ jobs:
     services:
       # Label used to access the service container
       postgres:
-        # Docker Hub image
-        image: postgres:latest
+        image: postgres:15-alpine
         env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: pgs3cr3t
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,16 +41,6 @@ jobs:
           poetry lock --no-update
           poetry install
 
-      - name: Run unit tests with PyTest
-        run: pytest --pspec --cov=service --cov-fail-under=95
-        env:
-          DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@localhost:5432/postgres"
-      
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3.1.4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }} 
-    
       - name: Linting
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -59,3 +49,14 @@ jobs:
           flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
           # Run pylint to catch other PEP8 errors
           pylint service tests --max-line-length=127
+
+      - name: Run unit tests with PyTest
+        run: pytest --pspec --cov=service --cov-fail-under=95
+        env:
+          DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres"
+ 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3.1.4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} 
+  

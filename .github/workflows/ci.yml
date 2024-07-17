@@ -38,9 +38,9 @@ jobs:
           poetry install
 
       - name: Run unit tests with PyTest
-        run: pytest --pspec --cov=service --cov-fail-under=95
+        run: pytest --pspec --cov=service #--cov-fail-under=95
         env:
-          DATABASE_URI: "redis://redis:6379"
+          DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres"
       
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3.1.4

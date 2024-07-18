@@ -82,9 +82,13 @@ class Recommendation(db.Model):
     def deserialize(self, data):
         try:
             self.name = data["name"]
-            self.product_id = data["product_id"]
-            self.recommended_product_id = data["recommended_product_id"]
+            self.product_id = int(data["product_id"])
+            self.recommended_product_id = int(data["recommended_product_id"])
             self.recommendation_type = data["recommendation_type"]
+        except ValueError:
+            raise DataValidationError(
+                "Invalid data type for product_id or recommended_product_id"
+            )
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

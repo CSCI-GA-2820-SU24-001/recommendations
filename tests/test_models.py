@@ -8,6 +8,7 @@ from unittest import TestCase
 from wsgi import app
 from service.models import Recommendation, DataValidationError, db
 from .factories import RecommendationFactory
+from unittest.mock import patch
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -185,3 +186,29 @@ class TestRecommendation(TestCase):
         data = "not a dictionary"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    ######################################################################
+    #  T E S T   E X C E P T I O N   H A N D L E R S
+    ######################################################################
+    def test_create_with_database_error(self):
+        """It should handle database errors during creation"""
+        with patch(
+            "service.models.db.session.add", side_effect=Exception("Mocked exception")
+        ):
+            recommendation = RecommendationFactory()
+            with self.assertRaises(DataValidationError):
+                recommendation.create()
+
+    def test_delete_recommendation_with_database_error(self):
+        """It should handle database errors during deletion"""
+        recommendation = RecommendationFactory()
+        recommendation.create()
+        with patch(
+            "service.models.db.session.delete",
+            side_effect=Exception("Mocked exception"),
+        ):
+            with self.assertRaises(DataValidationError):
+                recommendation.delete()
+            self.assertTrue(
+                db.session.rollback.called, "Database rollback should be called"
+            )

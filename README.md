@@ -30,7 +30,34 @@ This project aims to provide recommendations for customers based on their purcha
    flask run
    ```
 
-   
+
+
+## Manually running the Tests
+
+If you did not install this, you should first install `coverage`
+
+```
+pip install coverage
+```
+
+This repo also has unit tests that you can run
+
+```
+coverage run -m pytest
+```
+
+
+
+## API Calls Setting in this service
+
+```
+GET  /recommendations - Returns all of the Recommendations
+GET  /recommendations/{id} - Retrieves a recommendation with a specific id
+POST /recommendations - Creates a recommendation in the database from the posted data
+DELETE /recommendations/{id} - Deletes a recommendation from the database that matches the id
+```
+
+
 
 ## Contents
 
@@ -62,4 +89,3 @@ tests/                     - test cases package
 ├── test_models.py         - test suite for business models
 └── test_routes.py         - test suite for service routes
 ```
-

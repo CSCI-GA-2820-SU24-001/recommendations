@@ -75,6 +75,44 @@ def list_recommendations():
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 
+@app.route("/recommendations/<int:id>", methods=["GET"])
+def search_recommendations(id):
+    """Get a Recommendation by its id"""
+    app.logger.info("Request for recommendation with id: %s", id)
+    recommendation = Recommendation.find(id)
+    if recommendation:
+        message = recommendation.serialize()
+        return make_response(jsonify(message), status.HTTP_200_OK)
+    return make_response("", status.HTTP_404_NOT_FOUND)
+
+@app.route("/recommendations/<string:name>", methods=["GET"])
+def search_recommendations_by_name(name):
+    """Get a Recommendation by it's name"""
+    app.logger.info("Request for recommendation with name: %s", name)
+    recommendations = Recommendation.find_by_name(name)
+    results = [recommendation.serialize() for recommendation in recommendations]
+    return make_response(jsonify(results), status.HTTP_200_OK)
+
+@app.route("/recommendations/search", methods=["GET"])
+def search_recommendations_by_attributes():
+    product_id = request.args.get("product_id")
+    recommended_product_id = request.args.get("recommended_product_id")
+    recommendation_type = request.args.get("recommendation_type")
+    app.logger.info(
+        "Request for recommendations with product_id: %s, recommended_product_id: %s, recommendation_type: %s",
+        product_id,
+        recommended_product_id,
+        recommendation_type,
+    )
+    recommendations = Recommendation.find_by_attributes(
+        product_id, recommended_product_id, recommendation_type
+    )
+
+    if recommendations:
+        results = [recommendation.serialize() for recommendation in recommendations]
+        return make_response(jsonify(results), status.HTTP_200_OK)
+    return make_response("", status.HTTP_404_NOT_FOUND)
+
 ######################################################################
 # DELETE RECOMMENDATIONS
 ######################################################################
@@ -86,7 +124,6 @@ def delete_recommendations(id):
     if recommendation:
         recommendation.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
-
 
 ######################################################################
 # Liveness Health Checkpoint

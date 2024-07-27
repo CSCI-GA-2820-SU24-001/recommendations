@@ -127,7 +127,7 @@ class Recommendation(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
-    
+
     @classmethod
     def find_by_attribute(cls, product_id, recommended_product_id, recommended_type):
         """Returns all Recommendations with the given product_id and recommended_product_id and recommended product type
@@ -137,7 +137,7 @@ class Recommendation(db.Model):
             recommended_product_id (int): the recommended_product_id of the Recommendations you want to match
         """
         logger.info("Processing attribute query for product_id %s and recommended_product_id %s and recommended_type $s ...",
-                     product_id, recommended_product_id, recommended_type)
+                    product_id, recommended_product_id, recommended_type)
         result = cls.query
         if product_id:
             result = result.filter(cls.product_id == product_id)
@@ -146,4 +146,3 @@ class Recommendation(db.Model):
         if recommended_type:
             result = result.filter(cls.recommendation_type == recommended_type)
         return result.all()
-        

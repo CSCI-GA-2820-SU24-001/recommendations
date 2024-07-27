@@ -20,7 +20,7 @@ Recommendation Service
 This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of pets in the PetShop
 """
-from flask import jsonify, request, url_for, abort, make_response
+from flask import jsonify, request, make_response
 from flask import current_app as app  # Import Flask application
 from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
@@ -85,6 +85,7 @@ def search_recommendations(id):
         return make_response(jsonify(message), status.HTTP_200_OK)
     return make_response("", status.HTTP_404_NOT_FOUND)
 
+
 @app.route("/recommendations/<string:name>", methods=["GET"])
 def search_recommendations_by_name(name):
     """Get a Recommendation by it's name"""
@@ -92,6 +93,7 @@ def search_recommendations_by_name(name):
     recommendations = Recommendation.find_by_name(name)
     results = [recommendation.serialize() for recommendation in recommendations]
     return make_response(jsonify(results), status.HTTP_200_OK)
+
 
 @app.route("/recommendations/search", methods=["GET"])
 def search_recommendations_by_attributes():
@@ -112,6 +114,7 @@ def search_recommendations_by_attributes():
         results = [recommendation.serialize() for recommendation in recommendations]
         return make_response(jsonify(results), status.HTTP_200_OK)
     return make_response("", status.HTTP_404_NOT_FOUND)
+
 
 ######################################################################
 # DELETE RECOMMENDATIONS

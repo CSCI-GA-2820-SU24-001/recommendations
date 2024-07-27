@@ -146,3 +146,4 @@ class Recommendation(db.Model):
         if recommended_type:
             result = result.filter(cls.recommendation_type == recommended_type)
         return result.all()
+

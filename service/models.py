@@ -39,6 +39,7 @@ class Recommendation(db.Model):
         return f"<Recommendation {self.name} id=[{self.id}]>"
 
     def create(self):
+        """Function Create Records"""
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
         try:
@@ -50,6 +51,7 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def update(self):
+        """Function Update Records"""
         logger.info("Updating %s", self.name)
         try:
             if self.id is None:
@@ -61,6 +63,7 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def delete(self):
+        """Function that delete a record"""
         logger.info("Deleting %s", self.name)
         try:
             db.session.delete(self)
@@ -71,6 +74,7 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def serialize(self):
+        """Function that serialize a record"""
         return {
             "id": self.id,
             "name": self.name,
@@ -80,15 +84,16 @@ class Recommendation(db.Model):
         }
 
     def deserialize(self, data):
+        """Function that deserialize a record"""
         try:
             self.name = data["name"]
             self.product_id = int(data["product_id"])
             self.recommended_product_id = int(data["recommended_product_id"])
             self.recommendation_type = data["recommendation_type"]
-        except ValueError:
+        except ValueError as error:
             raise DataValidationError(
                 "Invalid data type for product_id or recommended_product_id"
-            )
+            ) from error
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

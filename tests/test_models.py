@@ -23,6 +23,11 @@ DATABASE_URI = os.getenv(
 class TestRecommendation(TestCase):
     """Test Cases for Recommendation Model"""
 
+    def setUp(self):
+        """This runs before each test"""
+        db.session.query(Recommendation).delete()  # clean up the last tests
+        db.session.commit()
+
     @classmethod
     def setUpClass(cls):
         """This runs once before the entire test suite"""
@@ -36,11 +41,6 @@ class TestRecommendation(TestCase):
     def tearDownClass(cls):
         """This runs once after the entire test suite"""
         db.session.close()
-
-    def setUp(self):
-        """This runs before each test"""
-        db.session.query(Recommendation).delete()  # clean up the last tests
-        db.session.commit()
 
     def tearDown(self):
         """This runs after each test"""

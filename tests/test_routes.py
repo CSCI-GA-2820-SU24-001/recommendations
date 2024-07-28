@@ -23,16 +23,6 @@ class TestYourResourceService(TestCase):
     """REST API Server Tests"""
 
     @classmethod
-    def setUpClass(cls):
-        """Run once before all tests"""
-        app.config["TESTING"] = True
-        app.config["DEBUG"] = False
-        # Set up the test database
-        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
-        app.logger.setLevel(logging.CRITICAL)
-        app.app_context().push()
-
-    @classmethod
     def tearDownClass(cls):
         """Run once after all tests"""
         db.session.close()
@@ -42,6 +32,16 @@ class TestYourResourceService(TestCase):
         self.client = app.test_client()
         db.session.query(Recommendation).delete()  # clean up the last tests
         db.session.commit()
+
+    @classmethod
+    def setUpClass(cls):
+        """Run once before all tests"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        # Set up the test database
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        app.app_context().push()
 
     def tearDown(self):
         """This runs after each test"""

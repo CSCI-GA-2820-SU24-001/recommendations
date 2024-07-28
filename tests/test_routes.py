@@ -5,6 +5,8 @@ TestRecommendation API Service Test Suite
 import os
 import logging
 from unittest import TestCase
+
+
 from wsgi import app
 from service.common import status
 from service.models import db, Recommendation
@@ -23,17 +25,6 @@ class TestYourResourceService(TestCase):
     """REST API Server Tests"""
 
     @classmethod
-    def tearDownClass(cls):
-        """Run once after all tests"""
-        db.session.close()
-
-    def setUp(self):
-        """Runs before each test"""
-        self.client = app.test_client()
-        db.session.query(Recommendation).delete()  # clean up the last tests
-        db.session.commit()
-
-    @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
         app.config["TESTING"] = True
@@ -42,6 +33,17 @@ class TestYourResourceService(TestCase):
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         app.app_context().push()
+
+    def setUp(self):
+        """Runs before each test"""
+        self.client = app.test_client()
+        db.session.query(Recommendation).delete()  # clean up the last tests
+        db.session.commit()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Run once after all tests"""
+        db.session.close()
 
     def tearDown(self):
         """This runs after each test"""

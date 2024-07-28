@@ -23,11 +23,6 @@ DATABASE_URI = os.getenv(
 class TestRecommendation(TestCase):
     """Test Cases for Recommendation Model"""
 
-    def setUp(self):
-        """This runs before each test"""
-        db.session.query(Recommendation).delete()  # clean up the last tests
-        db.session.commit()
-
     @classmethod
     def setUpClass(cls):
         """This runs once before the entire test suite"""
@@ -36,6 +31,11 @@ class TestRecommendation(TestCase):
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         app.app_context().push()
+
+    def setUp(self):
+        """This runs before each test"""
+        db.session.query(Recommendation).delete()  # clean up the last tests
+        db.session.commit()
 
     @classmethod
     def tearDownClass(cls):

@@ -24,8 +24,9 @@ from flask import jsonify, request, make_response
 from flask import current_app as app  # Import Flask application
 from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
-from sqlalchemy import text  # Import the text function
-from service.models import db  # for check endpoints
+
+# from sqlalchemy import text  # Import the text function
+# from service.models import db  # for check endpoints
 
 
 ######################################################################
@@ -78,14 +79,14 @@ def list_recommendations():
 ######################################################################
 # DELETE RECOMMENDATIONS
 ######################################################################
-@app.route("/recommendations/<int:id>", methods=["DELETE"])
-def delete_recommendations(id):
-    """Deletes a Recommendation from the database"""
-    app.logger.info("Request to delete recommendation with id: %s", id)
-    recommendation = Recommendation.find(id)
-    if recommendation:
-        recommendation.delete()
-    return make_response("", status.HTTP_204_NO_CONTENT)
+# @app.route("/recommendations/<int:id>", methods=["DELETE"])
+# def delete_recommendations(id):
+#     """Deletes a Recommendation from the database"""
+#     app.logger.info("Request to delete recommendation with id: %s", id)
+#     recommendation = Recommendation.find(id)
+#     if recommendation:
+#         recommendation.delete()
+#     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
@@ -105,15 +106,15 @@ def liveness():
 ######################################################################
 
 
-@app.route("/health/readiness", methods=["GET"])
-def readiness():
-    """Endpoint to check if the application is ready to serve"""
-    try:
-        # Attempt to make a simple query to ensure database connectivity
-        sql = text("select 1")
-        db.session.execute(sql)
-        app.logger.info("Readiness check performed")
-        return jsonify(status="OK"), 200
-    except Exception as e:
-        app.logger.error(f"Readiness check failed: {e}")
-        return jsonify(status="ERROR", message=str(e)), 500
+# @app.route("/health/readiness", methods=["GET"])
+# def readiness():
+#     """Endpoint to check if the application is ready to serve"""
+#     try:
+#         # Attempt to make a simple query to ensure database connectivity
+#         sql = text("select 1")
+#         db.session.execute(sql)
+#         app.logger.info("Readiness check performed")
+#         return jsonify(status="OK"), 200
+#     except Exception as e:
+#         app.logger.error(f"Readiness check failed: {e}")
+#         return jsonify(status="ERROR", message=str(e)), 500

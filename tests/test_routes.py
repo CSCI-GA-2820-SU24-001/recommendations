@@ -5,8 +5,7 @@ TestRecommendation API Service Test Suite
 import os
 import logging
 from unittest import TestCase
-
-
+from urllib.parse import urlparse
 from wsgi import app
 from service.common import status
 from service.models import db, Recommendation

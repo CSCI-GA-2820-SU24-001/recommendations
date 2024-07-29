@@ -76,17 +76,17 @@ def list_recommendations():
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 
-######################################################################
-# DELETE RECOMMENDATIONS
-######################################################################
-# @app.route("/recommendations/<int:id>", methods=["DELETE"])
-# def delete_recommendations(id):
-#     """Deletes a Recommendation from the database"""
-#     app.logger.info("Request to delete recommendation with id: %s", id)
-#     recommendation = Recommendation.find(id)
-#     if recommendation:
-#         recommendation.delete()
-#     return make_response("", status.HTTP_204_NO_CONTENT)
+#####################################################################
+# DELETE RECOMMENDATIONs
+#####################################################################
+@app.route("/recommendations/<int:id>", methods=["DELETE"])
+def delete_recommendations(id):
+    """Deletes a Recommendation from the database"""
+    app.logger.info("Request to delete recommendation with id: %s", id)
+    recommendation = Recommendation.find(id)
+    if recommendation:
+        recommendation.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################

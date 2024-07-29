@@ -80,10 +80,10 @@ def list_recommendations():
 # DELETE RECOMMENDATIONs
 #####################################################################
 @app.route("/recommendations/<int:id>", methods=["DELETE"])
-def delete_recommendations(id):
+def delete_recommendations(int_id):
     """Deletes a Recommendation from the database"""
-    app.logger.info("Request to delete recommendation with id: %s", id)
-    recommendation = Recommendation.find(id)
+    app.logger.info("Request to delete recommendation with id: %s", int_id)
+    recommendation = Recommendation.find(int_id)
     if recommendation:
         recommendation.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)

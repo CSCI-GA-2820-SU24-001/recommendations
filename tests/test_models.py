@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 """
 Test cases for Pet Model
 """

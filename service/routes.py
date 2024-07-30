@@ -14,6 +14,7 @@
 # limitations under the License.
 ######################################################################
 
+
 """
 Recommendation Service
 
@@ -59,25 +60,21 @@ def create_recommendations():
     """
     app.logger.info("Request to create a recommendation")
     # check_content_type("application/json")
-    recommendation = Recommendation()
-    recommendation.deserialize(request.get_json())
-    message = recommendation.serialize()
-    # location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
-    return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
+    try:
+        recommendation = Recommendation()
+        recommendation.deserialize(request.get_json())
+        message = recommendation.serialize()
+        # location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+        return make_response(
+            jsonify(message), status.HTTP_201_CREATED, {"Location": 250}
+        )
+    except SQLAlchemyError as e:
+        return {"message": str(e)}, 500
 
 
 ######################################################################
 # LIST RECOMMENDATIONS
 ######################################################################
-# @app.route("/recommendations", methods=["GET"])
-# def list_recommendations():
-#     """Returns all of the Recommendations"""
-#     app.logger.info("Request for recommendations")
-#     recommendations = Recommendation.all()
-#     results = [recommendation.serialize() for recommendation in recommendations]
-#     return make_response(jsonify(results), status.HTTP_200_OK)
-
-
 @app.route("/recommendations", methods=["GET"])
 def get_recommendations():
     """List all recommendations"""
@@ -91,7 +88,7 @@ def get_recommendations():
 #####################################################################
 # DELETE RECOMMENDATIONs
 #####################################################################
-@app.route("/recommendations/<int:int_id>", methods=["DELETE"])
+# @app.route("/recommendations/<int:int_id>", methods=["DELETE"])
 # def delete_recommendation(int_id):
 #     """delete a record"""
 #     recommendation = Recommendation.query.get(int_id)
@@ -103,32 +100,22 @@ def get_recommendations():
 #             return {"message": str(e)}, 500
 #     else:
 #         return {"message": "Recommendation not found"}, 404
-def delete_recommendation(int_id):
+@app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+def delete_recommendation(recommendation_id):
     """
     Delete a Recommendation
     """
-    # Retrieve the wishlist to delete and delete it if it exists
-    recommendation = Recommendation.find(int_id)
+    # Retrieve the recommendation to delete and delete it if it exists
+    recommendation = Recommendation.find(recommendation_id)
     if not recommendation:
         return "", status.HTTP_204_NO_CONTENT
 
-def list_recommendations():
-    """Returns all of the Recommendations"""
-    app.logger.info("Request for recommendations")
+    try:
+        recommendation.delete()
+    except SQLAlchemyError as e:
+        return jsonify({"error": str(e)}), status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    # See if any query filters were passed in
-    filters = {}
-    recommended_product_id = request.args.get("recommended_product_id")
-    recommendation_type = request.args.get("recommendation_type")
-
-    if recommended_product_id:
-        filters["recommended_product_id"] = recommended_product_id
-    if recommendation_type:
-        filters["recommendation_type"] = recommendation_type
-
-    recommendations = Recommendation.query_filter(filters)
-    results = [recommendation.serialize() for recommendation in recommendations]
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
@@ -144,19 +131,3 @@ def list_recommendations():
 
 
 ######################################################################
-# Readiness Health Checkpoints
-######################################################################
-
-
-# @app.route("/health/readiness", methods=["GET"])
-# def readiness():
-#     """Endpoint to check if the application is ready to serve"""
-#     try:
-#         # Attempt to make a simple query to ensure database connectivity
-#         sql = text("select 1")
-#         db.session.execute(sql)
-#         app.logger.info("Readiness check performed")
-#         return jsonify(status="OK"), 200
-#     except Exception as e:
-#         app.logger.error(f"Readiness check failed: {e}")
-#         return jsonify(status="ERROR", message=str(e)), 500

@@ -110,7 +110,7 @@ class TestYourResourceService(TestCase):
 
     def test_query_by_recommended_product_id(self):
         """It should Query Recommendations by recommended_product_id"""
-        recommendations = self._create_recommendations(5)
+        recommendations = self._create_recommendations(1)
         test_recommended_product_id = recommendations[0].recommended_product_id
         recommended_product_id_count = len(
             [

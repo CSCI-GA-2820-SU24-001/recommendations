@@ -5,6 +5,7 @@ All of the models are stored in this module
 """
 
 import logging
+from sqlalchemy.exc import SQLAlchemyError
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -39,7 +40,7 @@ class Recommendation(db.Model):
         return f"<Recommendation {self.name} id=[{self.id}]>"
 
     def create(self):
-        """Function Create Records"""
+        """create a record"""
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
         try:
@@ -51,7 +52,7 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def update(self):
-        """Function Update Records"""
+        """update a record"""
         logger.info("Updating %s", self.name)
         try:
             if self.id is None:
@@ -63,18 +64,18 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def delete(self):
-        """Function that delete a record"""
+        """delete a record"""
         logger.info("Deleting %s", self.name)
         try:
             db.session.delete(self)
             db.session.commit()
-        except Exception as e:
+        except SQLAlchemyError as e:
             db.session.rollback()
             logger.error("Error deleting record: %s", self)
             raise DataValidationError(e) from e
 
     def serialize(self):
-        """Function that serialize a record"""
+        """serialize a record"""
         return {
             "id": self.id,
             "name": self.name,

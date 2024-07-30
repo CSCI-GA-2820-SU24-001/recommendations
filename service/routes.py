@@ -82,7 +82,7 @@ def get_recommendations():
 #####################################################################
 # DELETE RECOMMENDATIONs
 #####################################################################
-# @app.route("/recommendations/<int:int_id>", methods=["DELETE"])
+@app.route("/recommendations/<int:int_id>", methods=["DELETE"])
 # def delete_recommendation(int_id):
 #     """delete a record"""
 #     recommendation = Recommendation.query.get(int_id)
@@ -94,22 +94,17 @@ def get_recommendations():
 #             return {"message": str(e)}, 500
 #     else:
 #         return {"message": "Recommendation not found"}, 404
-# @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
-# def delete_recommendation(recommendation_id):
-#     """
-#     Delete a Recommendation
-#     """
-#     # Retrieve the recommendation to delete and delete it if it exists
-#     recommendation = Recommendation.find(recommendation_id)
-#     if not recommendation:
-#         return "", status.HTTP_204_NO_CONTENT
+def delete_recommendation(int_id):
+    """
+    Delete a Recommendation
+    """
+    # Retrieve the wishlist to delete and delete it if it exists
+    recommendation = Recommendation.find(int_id)
+    if not recommendation:
+        return "", status.HTTP_204_NO_CONTENT
 
-#     try:
-#         recommendation.delete()
-#     except SQLAlchemyError as e:
-#         return jsonify({"error": str(e)}), status.HTTP_500_INTERNAL_SERVER_ERROR
-
-#     return "", status.HTTP_204_NO_CONTENT
+    recommendation.delete()
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################

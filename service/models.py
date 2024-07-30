@@ -7,8 +7,6 @@ All of the models are stored in this module
 import logging
 from flask_sqlalchemy import SQLAlchemy
 
-# from sqlalchemy.exc import SQLAlchemyError
-
 logger = logging.getLogger("flask.app")
 
 # Create the SQLAlchemy object to be initialized later in init_db()
@@ -64,15 +62,16 @@ class Recommendation(db.Model):
             logger.error("Error updating record: %s", self)
             raise DataValidationError(e) from e
 
-    # def delete(self):
-    #     """Function that delete a record"""
-    #     logger.info("Deleting %s", self.name)
-    #     try:
-    #         db.session.delete(self)
-    #         db.session.commit()
-    #     except SQLAlchemyError as e:
-    #         db.session.rollback()
-    #         raise e
+    def delete(self):
+        """Function that delete a record"""
+        logger.info("Deleting %s", self.name)
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error deleting record: %s", self)
+            raise DataValidationError(e) from e
 
     def serialize(self):
         """Function that serialize a record"""

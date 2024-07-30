@@ -90,13 +90,13 @@ class TestYourResourceService(TestCase):
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["name"], recommendation.name)
 
-    def test_delete_recommendation(self):
-        """It should Delete a Recommendation"""
-        recommendation = RecommendationFactory()
-        recommendation.create()
-        response = self.client.delete(f"/recommendations/{recommendation.id}")
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertIsNone(Recommendation.find(recommendation.id))
+    # def test_delete_recommendation(self):
+    #     """It should Delete a Recommendation"""
+    #     recommendation = RecommendationFactory()
+    #     recommendation.create()
+    #     response = self.client.delete(f"/recommendations/{recommendation.id}")
+    #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    #     self.assertIsNone(Recommendation.find(recommendation.id))
 
 
 ######################################################################

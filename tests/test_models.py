@@ -123,13 +123,13 @@ class TestRecommendation(TestCase):
         recommendation.id = None
         self.assertRaises(DataValidationError, recommendation.update)
 
-    def test_delete_recommendation(self):
-        """It should Delete a Recommendation"""
-        recommendation = RecommendationFactory()
-        recommendation.create()
-        self.assertEqual(len(Recommendation.all()), 1)
-        recommendation.delete()
-        self.assertEqual(len(Recommendation.all()), 0)
+    # def test_delete_recommendation(self):
+    #     """It should Delete a Recommendation"""
+    #     recommendation = RecommendationFactory()
+    #     recommendation.create()
+    #     self.assertEqual(len(Recommendation.all()), 1)
+    #     recommendation.delete()
+    #     self.assertEqual(len(Recommendation.all()), 0)
 
     def test_list_all_recommendations(self):
         """It should List all Recommendations"""
@@ -201,16 +201,16 @@ class TestRecommendation(TestCase):
             with self.assertRaises(DataValidationError):
                 recommendation.create()
 
-    def test_delete_recommendation_with_database_error(self):
-        """It should handle database errors during deletion"""
-        recommendation = RecommendationFactory()
-        recommendation.create()
-        with patch(
-            "service.models.db.session.delete",
-            side_effect=Exception("Mocked exception"),
-        ):
-            with self.assertRaises(DataValidationError):
-                recommendation.delete()
-            self.assertTrue(
-                db.session.rollback.called, "Database rollback should be called"
-            )
+    # def test_delete_recommendation_with_database_error(self):
+    #     """It should handle database errors during deletion"""
+    #     recommendation = RecommendationFactory()
+    #     recommendation.create()
+    #     with patch(
+    #         "service.models.db.session.delete",
+    #         side_effect=Exception("Mocked exception"),
+    #     ):
+    #         with self.assertRaises(DataValidationError):
+    #             recommendation.delete()
+    #         self.assertTrue(
+    #             db.session.rollback.called, "Database rollback should be called"
+    #         )

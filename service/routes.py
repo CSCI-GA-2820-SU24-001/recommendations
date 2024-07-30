@@ -22,8 +22,10 @@ and Delete Recommendations from the inventory of pets in the PetShop
 """
 from flask import jsonify, request, make_response
 from flask import current_app as app  # Import Flask application
+from sqlalchemy.exc import SQLAlchemyError
 from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
+
 
 # from sqlalchemy import text  # Import the text function
 # from service.models import db  # for check endpoints
@@ -68,25 +70,46 @@ def create_recommendations():
 # LIST RECOMMENDATIONS
 ######################################################################
 @app.route("/recommendations", methods=["GET"])
-def list_recommendations():
-    """Returns all of the Recommendations"""
-    app.logger.info("Request for recommendations")
-    recommendations = Recommendation.all()
-    results = [recommendation.serialize() for recommendation in recommendations]
-    return make_response(jsonify(results), status.HTTP_200_OK)
+def get_recommendations():
+    """List all recommendations"""
+    try:
+        recommendations = Recommendation.query.all()
+        return jsonify([rec.serialize() for rec in recommendations]), 200
+    except SQLAlchemyError as e:
+        return {"message": str(e)}, 500
 
 
 #####################################################################
 # DELETE RECOMMENDATIONs
 #####################################################################
-@app.route("/recommendations/<int:id>", methods=["DELETE"])
-def delete_recommendations(int_id):
-    """Deletes a Recommendation from the database"""
-    app.logger.info("Request to delete recommendation with id: %s", int_id)
-    recommendation = Recommendation.find(int_id)
-    if recommendation:
-        recommendation.delete()
-    return make_response("", status.HTTP_204_NO_CONTENT)
+# @app.route("/recommendations/<int:int_id>", methods=["DELETE"])
+# def delete_recommendation(int_id):
+#     """delete a record"""
+#     recommendation = Recommendation.query.get(int_id)
+#     if recommendation:
+#         try:
+#             recommendation.delete()
+#             return "", 204
+#         except SQLAlchemyError as e:
+#             return {"message": str(e)}, 500
+#     else:
+#         return {"message": "Recommendation not found"}, 404
+# @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+# def delete_recommendation(recommendation_id):
+#     """
+#     Delete a Recommendation
+#     """
+#     # Retrieve the recommendation to delete and delete it if it exists
+#     recommendation = Recommendation.find(recommendation_id)
+#     if not recommendation:
+#         return "", status.HTTP_204_NO_CONTENT
+
+#     try:
+#         recommendation.delete()
+#     except SQLAlchemyError as e:
+#         return jsonify({"error": str(e)}), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+#     return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
@@ -94,11 +117,11 @@ def delete_recommendations(int_id):
 ######################################################################
 
 
-@app.route("/health/liveness", methods=["GET"])
-def liveness():
-    """Endpoint to check if the application is alive"""
-    app.logger.info("Liveness check performed")
-    return jsonify(status="OK"), 200
+# @app.route("/health/liveness", methods=["GET"])
+# def liveness():
+#     """Endpoint to check if the application is alive"""
+#     app.logger.info("Liveness check performed")
+#     return jsonify(status="OK"), 200
 
 
 ######################################################################

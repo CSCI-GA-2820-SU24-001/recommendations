@@ -60,16 +60,11 @@ def create_recommendations():
     """
     app.logger.info("Request to create a recommendation")
     # check_content_type("application/json")
-    try:
-        recommendation = Recommendation()
-        recommendation.deserialize(request.get_json())
-        message = recommendation.serialize()
-        # location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
-        return make_response(
-            jsonify(message), status.HTTP_201_CREATED, {"Location": 250}
-        )
-    except SQLAlchemyError as e:
-        return {"message": str(e)}, 500
+    recommendation = Recommendation()
+    recommendation.deserialize(request.get_json())
+    message = recommendation.serialize()
+    # location_url = url_for("get_recommendations", id=recommendation.id, _external=True)
+    return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": 250})
 
 
 ######################################################################
@@ -78,44 +73,55 @@ def create_recommendations():
 @app.route("/recommendations", methods=["GET"])
 def get_recommendations():
     """List all recommendations"""
-    try:
-        recommendations = Recommendation.query.all()
-        return jsonify([rec.serialize() for rec in recommendations]), 200
-    except SQLAlchemyError as e:
-        return {"message": str(e)}, 500
+    recommendations = Recommendation.query.all()
+    return jsonify([rec.serialize() for rec in recommendations]), 200
+    # except SQLAlchemyError as e:
+    #     return {"message": str(e)}, 500
 
 
-#####################################################################
-# DELETE RECOMMENDATIONs
-#####################################################################
-# @app.route("/recommendations/<int:int_id>", methods=["DELETE"])
-# def delete_recommendation(int_id):
-#     """delete a record"""
-#     recommendation = Recommendation.query.get(int_id)
-#     if recommendation:
-#         try:
-#             recommendation.delete()
-#             return "", 204
-#         except SQLAlchemyError as e:
-#             return {"message": str(e)}, 500
-#     else:
-#         return {"message": "Recommendation not found"}, 404
-@app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
-def delete_recommendation(recommendation_id):
-    """
-    Delete a Recommendation
-    """
-    # Retrieve the recommendation to delete and delete it if it exists
-    recommendation = Recommendation.find(recommendation_id)
-    if not recommendation:
-        return "", status.HTTP_204_NO_CONTENT
+# @app.route("/recommendations", methods=["GET"])
+# def get_recommendations():
+#     """Get all Recommendations"""
+#     valid_params = ["recommended_product_id", "recommendation_type"]
+#     filters = request.args
 
-    try:
-        recommendation.delete()
-    except SQLAlchemyError as e:
-        return jsonify({"error": str(e)}), status.HTTP_500_INTERNAL_SERVER_ERROR
+#     # Check for invalid query parameters
+#     for param in filters:
+#         if param not in valid_params:
+#             return jsonify(error="Invalid query parameter"), status.HTTP_400_BAD_REQUEST
+#     return status.HTTP_200_OK
 
-    return "", status.HTTP_204_NO_CONTENT
+
+####################################################################
+#  DELETE RECOMMENDATIONS
+####################################################################
+@app.route("/recommendations/<int:int_id>", methods=["DELETE"])
+def delete_recommendation(int_id):
+    """delete a record"""
+    recommendation = Recommendation.query.get(int_id)
+    if recommendation:
+        try:
+            recommendation.delete()
+            return "", 204
+        except SQLAlchemyError as e:
+            return {"message": str(e)}, 500
+    else:
+        return {"message": "Recommendation not found"}, 404
+
+
+# @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+# def delete_recommendation(recommendation_id):
+#     """
+#     Delete a Recommendation
+#     """
+#     # Retrieve the recommendation to delete and delete it if it exists
+#     try:
+#         recommendation = Recommendation.find(recommendation_id)
+#         recommendation.delete()
+#     if not recommendation:
+#         return "", status.HTTP_204_NO_CONTENT
+
+#     return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################

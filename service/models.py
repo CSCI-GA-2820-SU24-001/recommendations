@@ -124,24 +124,24 @@ class Recommendation(db.Model):
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.session.get(cls, by_id)
 
-    @classmethod
-    def find_by_name(cls, name):
-        """Returns all Recommendations with the given name
+    # @classmethod
+    # def find_by_name(cls, name):
+    #     """Returns all Recommendations with the given name
 
-        Args:
-            name (string): the name of the Recommendations you want to match
-        """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+    #     Args:
+    #         name (string): the name of the Recommendations you want to match
+    #     """
+    #     logger.info("Processing name query for %s ...", name)
+    #     return cls.query.filter(cls.name == name)
 
-    @classmethod
-    def query_filter(cls, filters):
-        """Return filtered list of recommendations"""
-        query = cls.query
-        if "recommended_product_id" in filters:
-            query = query.filter_by(
-                recommended_product_id=filters["recommended_product_id"]
-            )
-        if "recommendation_type" in filters:
-            query = query.filter_by(recommendation_type=filters["recommendation_type"])
-        return query.all()
+    # @classmethod
+    # def query_filter(cls, filters):
+    #     """Return filtered list of recommendations"""
+    #     query = cls.query
+    #     if "recommended_product_id" in filters:
+    #         query = query.filter_by(
+    #             recommended_product_id=filters["recommended_product_id"]
+    #         )
+    #     if "recommendation_type" in filters:
+    #         query = query.filter_by(recommendation_type=filters["recommendation_type"])
+    #     return query.all()

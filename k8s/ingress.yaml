@@ -1,18 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nyu-project-ingress
+  name: recommendations
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: nyu-project.local
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: nyu-project-service
+            name: recommendations
             port:
               number: 8080

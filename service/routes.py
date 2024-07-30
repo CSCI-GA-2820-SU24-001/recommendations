@@ -14,18 +14,22 @@
 # limitations under the License.
 ######################################################################
 
+
 """
 Recommendation Service
 
 This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of pets in the PetShop
 """
-from flask import jsonify, request, url_for, abort, make_response
+from flask import jsonify, request, make_response
 from flask import current_app as app  # Import Flask application
+from sqlalchemy.exc import SQLAlchemyError
 from service.models import Recommendation
 from service.common import status  # HTTP Status Codes
-from sqlalchemy import text  # Import the text function
-from service.models import db  # for check endpoints
+
+
+# from sqlalchemy import text  # Import the text function
+# from service.models import db  # for check endpoints
 
 
 ######################################################################
@@ -66,46 +70,58 @@ def create_recommendations():
 ######################################################################
 # LIST RECOMMENDATIONS
 ######################################################################
-# @app.route("/recommendations", methods=["GET"])
-# def list_recommendations():
-#     """Returns all of the Recommendations"""
-#     app.logger.info("Request for recommendations")
-#     recommendations = Recommendation.all()
-#     results = [recommendation.serialize() for recommendation in recommendations]
-#     return make_response(jsonify(results), status.HTTP_200_OK)
-
-
 @app.route("/recommendations", methods=["GET"])
-def list_recommendations():
-    """Returns all of the Recommendations"""
-    app.logger.info("Request for recommendations")
-
-    # See if any query filters were passed in
-    filters = {}
-    recommended_product_id = request.args.get("recommended_product_id")
-    recommendation_type = request.args.get("recommendation_type")
-
-    if recommended_product_id:
-        filters["recommended_product_id"] = recommended_product_id
-    if recommendation_type:
-        filters["recommendation_type"] = recommendation_type
-
-    recommendations = Recommendation.query_filter(filters)
-    results = [recommendation.serialize() for recommendation in recommendations]
-    return make_response(jsonify(results), status.HTTP_200_OK)
+def get_recommendations():
+    """List all recommendations"""
+    recommendations = Recommendation.query.all()
+    return jsonify([rec.serialize() for rec in recommendations]), 200
+    # except SQLAlchemyError as e:
+    #     return {"message": str(e)}, 500
 
 
-######################################################################
-# DELETE RECOMMENDATIONS
-######################################################################
-@app.route("/recommendations/<int:id>", methods=["DELETE"])
-def delete_recommendations(id):
-    """Deletes a Recommendation from the database"""
-    app.logger.info("Request to delete recommendation with id: %s", id)
-    recommendation = Recommendation.find(id)
+# @app.route("/recommendations", methods=["GET"])
+# def get_recommendations():
+#     """Get all Recommendations"""
+#     valid_params = ["recommended_product_id", "recommendation_type"]
+#     filters = request.args
+
+#     # Check for invalid query parameters
+#     for param in filters:
+#         if param not in valid_params:
+#             return jsonify(error="Invalid query parameter"), status.HTTP_400_BAD_REQUEST
+#     return status.HTTP_200_OK
+
+
+####################################################################
+#  DELETE RECOMMENDATIONS
+####################################################################
+@app.route("/recommendations/<int:int_id>", methods=["DELETE"])
+def delete_recommendation(int_id):
+    """delete a record"""
+    recommendation = Recommendation.query.get(int_id)
     if recommendation:
-        recommendation.delete()
-    return make_response("", status.HTTP_204_NO_CONTENT)
+        try:
+            recommendation.delete()
+            return "", 204
+        except SQLAlchemyError as e:
+            return {"message": str(e)}, 500
+    else:
+        return {"message": "Recommendation not found"}, 404
+
+
+# @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+# def delete_recommendation(recommendation_id):
+#     """
+#     Delete a Recommendation
+#     """
+#     # Retrieve the recommendation to delete and delete it if it exists
+#     try:
+#         recommendation = Recommendation.find(recommendation_id)
+#         recommendation.delete()
+#     if not recommendation:
+#         return "", status.HTTP_204_NO_CONTENT
+
+#     return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
@@ -113,27 +129,11 @@ def delete_recommendations(id):
 ######################################################################
 
 
-@app.route("/health/liveness", methods=["GET"])
-def liveness():
-    """Endpoint to check if the application is alive"""
-    app.logger.info("Liveness check performed")
-    return jsonify(status="OK"), 200
+# @app.route("/health/liveness", methods=["GET"])
+# def liveness():
+#     """Endpoint to check if the application is alive"""
+#     app.logger.info("Liveness check performed")
+#     return jsonify(status="OK"), 200
 
 
 ######################################################################
-# Readiness Health Checkpoints
-######################################################################
-
-
-@app.route("/health/readiness", methods=["GET"])
-def readiness():
-    """Endpoint to check if the application is ready to serve"""
-    try:
-        # Attempt to make a simple query to ensure database connectivity
-        sql = text("select 1")
-        db.session.execute(sql)
-        app.logger.info("Readiness check performed")
-        return jsonify(status="OK"), 200
-    except Exception as e:
-        app.logger.error(f"Readiness check failed: {e}")
-        return jsonify(status="ERROR", message=str(e)), 500

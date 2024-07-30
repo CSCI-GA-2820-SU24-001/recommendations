@@ -69,6 +69,15 @@ def create_recommendations():
 ######################################################################
 # LIST RECOMMENDATIONS
 ######################################################################
+# @app.route("/recommendations", methods=["GET"])
+# def list_recommendations():
+#     """Returns all of the Recommendations"""
+#     app.logger.info("Request for recommendations")
+#     recommendations = Recommendation.all()
+#     results = [recommendation.serialize() for recommendation in recommendations]
+#     return make_response(jsonify(results), status.HTTP_200_OK)
+
+
 @app.route("/recommendations", methods=["GET"])
 def get_recommendations():
     """List all recommendations"""
@@ -103,8 +112,23 @@ def delete_recommendation(int_id):
     if not recommendation:
         return "", status.HTTP_204_NO_CONTENT
 
-    recommendation.delete()
-    return "", status.HTTP_204_NO_CONTENT
+def list_recommendations():
+    """Returns all of the Recommendations"""
+    app.logger.info("Request for recommendations")
+
+    # See if any query filters were passed in
+    filters = {}
+    recommended_product_id = request.args.get("recommended_product_id")
+    recommendation_type = request.args.get("recommendation_type")
+
+    if recommended_product_id:
+        filters["recommended_product_id"] = recommended_product_id
+    if recommendation_type:
+        filters["recommendation_type"] = recommendation_type
+
+    recommendations = Recommendation.query_filter(filters)
+    results = [recommendation.serialize() for recommendation in recommendations]
+    return make_response(jsonify(results), status.HTTP_200_OK)
 
 
 ######################################################################

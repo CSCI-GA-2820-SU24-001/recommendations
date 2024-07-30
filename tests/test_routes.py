@@ -10,6 +10,7 @@ from wsgi import app
 from service.common import status
 from service.models import db, Recommendation
 from .factories import RecommendationFactory
+from urllib.parse import quote_plus
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -97,6 +98,48 @@ class TestYourResourceService(TestCase):
         response = self.client.delete(f"/recommendations/{recommendation.id}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertIsNone(Recommendation.find(recommendation.id))
+
+    def _create_recommendations(self, count):
+        """Factory method to create recommendations in bulk"""
+        recommendations = []
+        for _ in range(count):
+            recommendation = RecommendationFactory()
+            recommendation.create()
+            recommendations.append(recommendation)
+        return recommendations
+
+    def test_query_by_recommended_product_id(self):
+        """It should Query Recommendations by recommended_product_id"""
+        recommendations = self._create_recommendations(5)
+        test_recommended_product_id = recommendations[0].recommended_product_id
+        recommended_product_id_count = len(
+            [
+                recommendation
+                for recommendation in recommendations
+                if recommendation.recommended_product_id == test_recommended_product_id
+            ]
+        )
+        response = self.client.get(
+            "/recommendations",
+            query_string=f"recommended_product_id={quote_plus(str(test_recommended_product_id))}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), recommended_product_id_count)
+        for recommendation in data:
+            self.assertEqual(
+                recommendation["recommended_product_id"], test_recommended_product_id
+            )
+
+    def test_invalid_query_parameters(self):
+        """It should return error for invalid query parameters"""
+        response = self.client.get(
+            "/recommendations", query_string="invalid_param=value"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        self.assertIn("error", data)
+        self.assertEqual(data["error"], "Invalid query parameter")
 
 
 ######################################################################

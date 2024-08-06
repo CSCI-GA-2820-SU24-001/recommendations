@@ -161,6 +161,7 @@ class TestRecommendation(TestCase):
         self.assertEqual(
             data["recommendation_type"], recommendation.recommendation_type
         )
+        
     def test_find_by_attribute(self):
         """It should find Recommendations by product_id, recommended_product_id, and recommendation_type"""
         recommendation1 = Recommendation(

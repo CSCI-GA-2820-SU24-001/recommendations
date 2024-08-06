@@ -122,11 +122,11 @@ def delete_recommendation(int_id):
 #         return "", status.HTTP_204_NO_CONTENT
 
 
-@app.route("/recommendations/<int:id>", methods=["GET"])
-def search_recommendations(id):
-    """Get a Recommendation by its id"""
-    app.logger.info("Request for recommendation with id: %s", id)
-    recommendation = Recommendation.find(id)
+@app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
+def search_recommendations(recommendation_id):
+    """Get a Recommendation by its recommendation_id"""
+    app.logger.info("Request for recommendation with recommendation_id: %s", recommendation_id)
+    recommendation = Recommendation.find(recommendation_id)
     if recommendation:
         message = recommendation.serialize()
         return make_response(jsonify(message), status.HTTP_200_OK)
@@ -144,6 +144,7 @@ def search_recommendations_by_name(name):
 
 @app.route("/recommendations/search", methods=["GET"])
 def search_recommendations_by_attributes():
+    """Get a recommendation by product_id, recommended_product_id and recommendation_type"""
     product_id = request.args.get("product_id")
     recommended_product_id = request.args.get("recommended_product_id")
     recommendation_type = request.args.get("recommendation_type")
@@ -166,11 +167,11 @@ def search_recommendations_by_attributes():
 ######################################################################
 # DELETE RECOMMENDATIONS
 ######################################################################
-@app.route("/recommendations/<int:id>", methods=["DELETE"])
-def delete_recommendations(id):
+@app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+def delete_recommendations(recommendation_id):
     """Deletes a Recommendation from the database"""
-    app.logger.info("Request to delete recommendation with id: %s", id)
-    recommendation = Recommendation.find(id)
+    app.logger.info("Request to delete recommendation with recommendation_id: %s", recommendation_id)
+    recommendation = Recommendation.find(recommendation_id)
     if recommendation:
         recommendation.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)

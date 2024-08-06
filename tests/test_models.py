@@ -162,59 +162,6 @@ class TestRecommendation(TestCase):
             data["recommendation_type"], recommendation.recommendation_type
         )
 
-        def test_find_by_attribute(self):
-            """It should find Recommendations by product_id, recommended_product_id, and recommendation_type"""
-            recommendation1 = Recommendation(
-                name="t-shirt",
-                product_id=101,
-                recommended_product_id=404,
-                recommendation_type="cross-sell",
-            )
-            recommendation1.create()
-
-            recommendation2 = Recommendation(
-                name="shoes",
-                product_id=202,
-                recommended_product_id=404,
-                recommendation_type="up-sell",
-            )
-            recommendation2.create()
-
-            recommendation3 = Recommendation(
-                name="hat",
-                product_id=303,
-                recommended_product_id=505,
-                recommendation_type="cross-sell",
-            )
-            recommendation3.create()
-
-            # Test with all attributes
-            results = Recommendation.find_by_attribute(101, 202, "cross-sell")
-            self.assertEqual(len(results), 1)
-            self.assertEqual(results[0].name, "t-shirt")
-
-            # Test with only product_id
-            results = Recommendation.find_by_attribute(None, 404, None)
-            self.assertEqual(len(results), 2)
-            self.assertEqual(results[0].name, "t-shirt")
-            self.assertEqual(results[1].name, "shoes")
-
-            # Test with only recommended_product_id
-            results = Recommendation.find_by_attribute(None, None, "cross-sell")
-            self.assertEqual(len(results), 2)
-            self.assertEqual(results[0].name, "t-shirt")
-            self.assertEqual(results[1].name, "hat")
-
-            # Test with only recommendation_type
-            results = Recommendation.find_by_attribute(None, None, "cross-sell")
-            self.assertEqual(len(results), 2)
-            self.assertEqual(results[0].name, "t-shirt")
-            self.assertEqual(results[1].name, "hat")
-
-            # Test with no matching attributes
-            results = Recommendation.find_by_attribute(999, 999, "unknown")
-            self.assertEqual(len(results), 0)
-
     def test_deserialize_recommendation(self):
         """It should de-serialize a recommendation"""
         data = RecommendationFactory().serialize()

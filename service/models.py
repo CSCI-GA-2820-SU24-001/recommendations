@@ -142,7 +142,7 @@ class Recommendation(db.Model):
             product_id (int): the product_id of the Recommendations you want to match
             recommended_product_id (int): the recommended_product_id of the Recommendations you want to match
         """
-        logger.info("Processing attribute query for product_id %s and recommended_product_id %s and recommended_type $s ...",
+        logger.info("Processing attribute query for product_id %s and recommended_product_id %s and recommended_type %s ...",
                     product_id, recommended_product_id, recommended_type)
         result = cls.query
         if product_id:

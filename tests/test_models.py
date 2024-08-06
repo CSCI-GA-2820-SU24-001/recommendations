@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 """
 Test cases for Pet Model
 """
@@ -5,10 +6,12 @@ Test cases for Pet Model
 import os
 import logging
 from unittest import TestCase
+from unittest.mock import patch
+from sqlalchemy.exc import SQLAlchemyError
 from wsgi import app
 from service.models import Recommendation, DataValidationError, db
 from .factories import RecommendationFactory
-from unittest.mock import patch
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -31,15 +34,15 @@ class TestRecommendation(TestCase):
         app.logger.setLevel(logging.CRITICAL)
         app.app_context().push()
 
-    @classmethod
-    def tearDownClass(cls):
-        """This runs once after the entire test suite"""
-        db.session.close()
-
     def setUp(self):
         """This runs before each test"""
         db.session.query(Recommendation).delete()  # clean up the last tests
         db.session.commit()
+
+    @classmethod
+    def tearDownClass(cls):
+        """This runs once after the entire test suite"""
+        db.session.close()
 
     def tearDown(self):
         """This runs after each test"""
@@ -252,16 +255,29 @@ class TestRecommendation(TestCase):
             with self.assertRaises(DataValidationError):
                 recommendation.create()
 
-    def test_delete_recommendation_with_database_error(self):
+    # def test_delete_recommendation_with_database_error(self):
+    #     """It should handle database errors during deletion"""
+    #     recommendation = RecommendationFactory()
+    #     recommendation.create()
+    #     with patch(
+    #         "service.models.db.session.delete",
+    #         side_effect=Exception("Mocked exception"),
+    #     ):
+    #         with self.assertRaises(DataValidationError):
+    #             recommendation.delete()
+    #         self.assertTrue(
+    #             db.session.rollback.called, "Database rollback should be called"
+    #         )
+
+    def test_handle_database_errors_during_deletion(self):
         """It should handle database errors during deletion"""
         recommendation = RecommendationFactory()
         recommendation.create()
         with patch(
             "service.models.db.session.delete",
-            side_effect=Exception("Mocked exception"),
-        ):
-            with self.assertRaises(DataValidationError):
+            side_effect=SQLAlchemyError("Mocked exception"),
+        ) as mock_delete:
+            with self.assertRaises(DataValidationError) as context:
                 recommendation.delete()
-            self.assertTrue(
-                db.session.rollback.called, "Database rollback should be called"
-            )
+            self.assertTrue(mock_delete.called)
+            self.assertIn("Mocked exception", str(context.exception))

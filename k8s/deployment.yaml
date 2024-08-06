@@ -1,123 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nyu-project-deployment
+  name: recommendations
+  namespace: recommendations-ns
+  labels:
+    app: recommendations
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0 
   selector:
     matchLabels:
-      app: nyu-project
+      app: recommendations
   template:
     metadata:
       labels:
-        app: nyu-project
+        app: recommendations
     spec:
+      restartPolicy: Always
       containers:
-      - name: nyu-project-container
+      - name: recommendations
         image: cluster-registry:5000/recommendations:1.0
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+          protocol: TCP
         env:
-        - name: DATABASE_URI
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: DATABASE_URI
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: SECRET_KEY
+          - name: RETRY_COUNT
+            value: "10"
+          - name: DATABASE_URI
+            valueFrom:
+              secretKeyRef:
+                name: postgres-creds
+                key: DATABASE_URI
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: postgres-creds
+                key: SECRET_KEY
         resources:
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            cpu: "0.50"
+            memory: "128Mi"
           requests:
-            memory: "256Mi"
-            cpu: "250m"
-      imagePullSecrets:
-      - name: regcred
-
----
-
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres
-spec:
-  selector:
-    matchLabels:
-      app: postgres
-  serviceName: "postgres"
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: DATABASE_URI
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: nyu-project-service
-spec:
-  selector:
-    app: nyu-project
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-service
-spec:
-  selector:
-    app: postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nyu-project-ingress
-spec:
-  rules:
-  - host: nyu-project.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: nyu-project-service
-            port:
-              number: 8080
+            cpu: "0.25"
+            memory: "64Mi"

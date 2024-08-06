@@ -5,6 +5,7 @@ All of the models are stored in this module
 """
 
 import logging
+from sqlalchemy.exc import SQLAlchemyError
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -39,6 +40,7 @@ class Recommendation(db.Model):
         return f"<Recommendation {self.name} id=[{self.id}]>"
 
     def create(self):
+        """create a record"""
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
         try:
@@ -50,6 +52,7 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def update(self):
+        """update a record"""
         logger.info("Updating %s", self.name)
         try:
             if self.id is None:
@@ -61,16 +64,18 @@ class Recommendation(db.Model):
             raise DataValidationError(e) from e
 
     def delete(self):
+        """delete a record"""
         logger.info("Deleting %s", self.name)
         try:
             db.session.delete(self)
             db.session.commit()
-        except Exception as e:
+        except SQLAlchemyError as e:
             db.session.rollback()
             logger.error("Error deleting record: %s", self)
             raise DataValidationError(e) from e
 
     def serialize(self):
+        """serialize a record"""
         return {
             "id": self.id,
             "name": self.name,
@@ -80,15 +85,16 @@ class Recommendation(db.Model):
         }
 
     def deserialize(self, data):
+        """Function that deserialize a record"""
         try:
             self.name = data["name"]
             self.product_id = int(data["product_id"])
             self.recommended_product_id = int(data["recommended_product_id"])
             self.recommendation_type = data["recommendation_type"]
-        except ValueError:
+        except ValueError as error:
             raise DataValidationError(
                 "Invalid data type for product_id or recommended_product_id"
-            )
+            ) from error
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

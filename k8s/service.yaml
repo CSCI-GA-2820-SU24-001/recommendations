@@ -1,23 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nyu-project-service
+  name: recommendations
+  labels:
+    app: recommendations
 spec:
   selector:
-    app: nyu-project
+    app: recommendations
+  type: ClusterIP
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 8080
       targetPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-service
-spec:
-  selector:
-    app: postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ######################################################################
+# spell: ignore Rofrano jsonify restx dbname
 
 
 """
@@ -21,7 +22,7 @@ Recommendation Service
 This service implements a REST API that allows you to Create, Read, Update
 and Delete Recommendations from the inventory of pets in the PetShop
 """
-from flask import jsonify, request, make_response
+from flask import jsonify, request, url_for, abort, make_response
 from flask import current_app as app  # Import Flask application
 from sqlalchemy.exc import SQLAlchemyError
 from service.models import Recommendation
@@ -38,10 +39,7 @@ from service.common import status  # HTTP Status Codes
 @app.route("/")
 def index():
     """Root URL response"""
-    return (
-        "This is the home page",
-        status.HTTP_200_OK,
-    )
+    return app.send_static_file("index.html")
 
 
 ######################################################################

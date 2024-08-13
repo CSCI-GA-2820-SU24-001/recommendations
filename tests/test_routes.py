@@ -54,13 +54,16 @@ class TestYourResourceService(TestCase):
     ######################################################################
 
     def test_index(self):
-        """It should call the Home Page"""
+        """It should serve the index.html file"""
         response = self.client.get("/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Recommendation Demo RESTful Service", response.data)
         self.assertIn(
-            b"This is the home page",
-            response.data,
+            b"Create, Retrieve, Update, and Delete a Recommendation", response.data
         )
+
+        # Check for the footer content
+        self.assertIn(b"&copy; NYU DevOps Company 2023", response.data)
 
     def test_create_recommendation(self):
         """It should Create a new Recommendation"""

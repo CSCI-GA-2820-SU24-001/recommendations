@@ -38,10 +38,11 @@ from service.common import status  # HTTP Status Codes
 @app.route("/")
 def index():
     """Root URL response"""
-    return (
-        "This is the home page",
-        status.HTTP_200_OK,
-    )
+    return app.send_static_file("index.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8080)
 
 
 ######################################################################

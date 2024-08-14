@@ -31,8 +31,8 @@ jobs:
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-interval 15s
+          --health-timeout 10s
           --health-retries 5
 
     steps:
@@ -50,10 +50,10 @@ jobs:
           echo "\n*** STARTING APPLICATION ***\n"
           gunicorn --log-level=info --bind=0.0.0.0:8080 wsgi:app &
           echo "Waiting for service to stabilize..."
-          sleep 5
-        #   echo "Checking service /health..."
-        #   curl -i http://localhost:8080/health
-        #   echo "\n*** SERVER IS RUNNING ***"
+          sleep 10
+          echo "Checking service /health..."
+          curl -i http://localhost:8080/health
+          echo "\n*** SERVER IS RUNNING ***"
         env:
           DATABASE_URI: "postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/testdb"
 

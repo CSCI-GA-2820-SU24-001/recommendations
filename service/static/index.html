@@ -68,7 +68,13 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="rec_type">Recommendation Type:</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="rec_type" placeholder="Enter Recommendation Type">
+                            <select class="form-control" id="rec_type">
+                                <option value="" selected>Select a type</option>
+                                <option value="up-sell">Up Sell</option>
+                                <option value="cross-sell">Cross Sell</option>
+                                <option value="accessory">Accessory</option>
+                                <option value="bundle">Bundle</option>
+                            </select>
                         </div>
                     </div>
                 
@@ -82,55 +88,54 @@
                             <button type="submit" class="btn btn-danger" id="delete-btn">Delete</button>
                         </div>
                     </div>
-                </div>
-                
-</div> <!-- form horizontal -->
-</div> <!-- end well -->
-</div> <!-- end Form -->
+                </div> <!-- form horizontal -->
+            </div> <!-- end well -->
+        </div> <!-- end Form -->
+    </div>
 
-<!-- Search Results -->
-<div class="table-responsive col-md-12" id="search_results">
-<table class="table table-striped">
-<thead>
-<tr>
-    <!--
-        style="border-right: 1px dashed #000;"
-    -->
-    <th class="col-md-1">ID</th>
-    <th class="col-md-1">Name</th>
-    <th class="col-md-1">Product ID</th>
-    <th class="col-md-2">Recommended Product ID</th>
-    <th class="col-md-2">Recommendation Type</th>
-    <th class="col-md-2">Created Time</th>
-    <th class="col-md-2">Updated Time</th>
-</tr>
-</thead>
-</table>
-</div>
+    <!-- Search Results -->
+    <div class="table-responsive col-md-12" id="search_results">
+    <table class="table table-striped">
+    <thead>
+    <tr>
+        <!--
+            style="border-right: 1px dashed #000;"
+        -->
+        <th class="col-md-1">ID</th>
+        <th class="col-md-1">Name</th>
+        <th class="col-md-1">Product ID</th>
+        <th class="col-md-2">Recommended Product ID</th>
+        <th class="col-md-2">Recommendation Type</th>
+        <th class="col-md-2">Created Time</th>
+        <th class="col-md-2">Updated Time</th>
+    </tr>
+    </thead>
+    </table>
+    </div>
 
-<!-- Pagination Controls -->
-<div class="col-md-12" style="text-align: center;">
-<div class="table-responsive">
-<table class="table">
-<tr>
-    <td><span id="search_summary"></span></td>
-</tr>
-</table>
-</div>
-<div class="form-group">
-<label class="control-label" for="page_size">Item per page:</label>
-<select id="page_size">
-<option value="5" selected>5</option>
-<option value="10">10</option>
-<option value="20">20</option>
-<option value="50">50</option>
-</select>
-</div>
-<div class="form-group">
-<label class="control-label" for="page_index">Page index:</label>
-<input type="text" class="form-control" id="page_index" value="1"
-style="display: inline-block; width: 60px;">
-</div>
+    <!-- Pagination Controls -->
+    <div class="col-md-12" style="text-align: center;">
+    <div class="table-responsive">
+    <table class="table">
+    <tr>
+        <td><span id="search_summary"></span></td>
+    </tr>
+    </table>
+    </div>
+    <div class="form-group">
+    <label class="control-label" for="page_size">Item per page:</label>
+    <select id="page_size">
+    <option value="5" selected>5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+    </select>
+    </div>
+    <div class="form-group">
+    <label class="control-label" for="page_index">Page index:</label>
+    <input type="text" class="form-control" id="page_index" value="1"
+    style="display: inline-block; width: 60px;">
+    </div>
 </div>
 
 <footer>

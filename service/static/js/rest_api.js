@@ -42,6 +42,11 @@ $("#create-btn").click(function () {
     let recommended_product_id = $("#recommended_product_id").val();
     let rec_type = $("#rec_type").val();
 
+    console.log("Name:", name);
+    console.log("Product ID:", product_id);
+    console.log("Recommended Product ID:", recommended_product_id);
+    console.log("Recommendation Type:", rec_type);
+
     let data = {
         "name": name,
         "product_id": parseInt(product_id),

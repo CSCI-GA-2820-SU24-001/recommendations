@@ -5,256 +5,272 @@ $(function () {
     // ****************************************
 
     // Updates the form with data from the response
-    function update_form_data(res) {
-        $("#pet_id").val(res.id);
-        $("#pet_name").val(res.name);
-        $("#pet_category").val(res.category);
-        if (res.available == true) {
-            $("#pet_available").val("true");
-        } else {
-            $("#pet_available").val("false");
-        }
-        $("#pet_gender").val(res.gender);
-        $("#pet_birthday").val(res.birthday);
-    }
+function update_form_data(res) {
+    $("#rec_id").val(res.id);
+    $("#rec_name").val(res.name);
+    $("#product_id").val(res.product_id);
+    $("#recommended_product_id").val(res.recommended_product_id);
+    $("#rec_type").val(res.recommendation_type);
+}
 
-    /// Clears all form fields
-    function clear_form_data() {
-        $("#pet_name").val("");
-        $("#pet_category").val("");
-        $("#pet_available").val("");
-        $("#pet_gender").val("");
-        $("#pet_birthday").val("");
-    }
+// Clears all form fields
+function clear_form_data() {
+    $("#rec_id").val("");
+    $("#rec_name").val("");
+    $("#product_id").val("");
+    $("#recommended_product_id").val("");
+    $("#rec_type").val("");
+}
 
-    // Updates the flash message area
-    function flash_message(message) {
-        $("#flash_message").empty();
-        $("#flash_message").append(message);
-    }
+// Updates the flash message area
+function flash_message(message) {
+    $("#flash_message").empty();
+    $("#flash_message").append(message);
+}
+
+
 
     // ****************************************
     // Create a Pet
     // ****************************************
 
-    $("#create-btn").click(function () {
+    // Create a Recommendation
+$("#create-btn").click(function () {
 
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+    let name = $("#rec_name").val();
+    let product_id = $("#product_id").val();
+    let recommended_product_id = $("#recommended_product_id").val();
+    let rec_type = $("#rec_type").val();
 
-        let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
-        };
+    let data = {
+        "name": name,
+        "product_id": parseInt(product_id),
+        "recommended_product_id": parseInt(recommended_product_id),
+        "recommendation_type": rec_type
+    };
 
-        $("#flash_message").empty();
-        
-        let ajax = $.ajax({
-            type: "POST",
-            url: "/pets",
-            contentType: "application/json",
-            data: JSON.stringify(data),
-        });
-
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
+    $("#flash_message").empty();
+    
+    let ajax = $.ajax({
+        type: "POST",
+        url: "/recommendations",
+        contentType: "application/json",
+        data: JSON.stringify(data),
     });
+
+    ajax.done(function(res){
+        update_form_data(res);
+        flash_message("Success");
+    });
+
+    ajax.fail(function(res){
+        flash_message(res.responseJSON.message);
+    });
+});
+
+
 
 
     // ****************************************
     // Update a Pet
     // ****************************************
 
-    $("#update-btn").click(function () {
+    // Update a Recommendation
+$("#update-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+    let rec_id = $("#rec_id").val();
+    let name = $("#rec_name").val();
+    let product_id = $("#product_id").val();
+    let recommended_product_id = $("#recommended_product_id").val();
+    let rec_type = $("#rec_type").val();
 
-        let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
-        };
+    let data = {
+        "name": name,
+        "product_id": parseInt(product_id),
+        "recommended_product_id": parseInt(recommended_product_id),
+        "recommendation_type": rec_type
+    };
 
-        $("#flash_message").empty();
+    $("#flash_message").empty();
 
-        let ajax = $.ajax({
-                type: "PUT",
-                url: `/pets/${pet_id}`,
-                contentType: "application/json",
-                data: JSON.stringify(data)
-            })
-
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
-
+    let ajax = $.ajax({
+        type: "PUT",
+        url: `/recommendations/${rec_id}`,
+        contentType: "application/json",
+        data: JSON.stringify(data)
     });
+
+    ajax.done(function(res){
+        update_form_data(res);
+        flash_message("Success");
+    });
+
+    ajax.fail(function(res){
+        flash_message(res.responseJSON.message);
+    });
+
+});
+
+
 
     // ****************************************
     // Retrieve a Pet
     // ****************************************
 
-    $("#retrieve-btn").click(function () {
+ // Retrieve a Recommendation
+$("#retrieve-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+    let rec_id = $("#rec_id").val();
 
-        $("#flash_message").empty();
+    $("#flash_message").empty();
 
-        let ajax = $.ajax({
-            type: "GET",
-            url: `/pets/${pet_id}`,
-            contentType: "application/json",
-            data: ''
-        })
-
-        ajax.done(function(res){
-            //alert(res.toSource())
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            clear_form_data()
-            flash_message(res.responseJSON.message)
-        });
-
+    let ajax = $.ajax({
+        type: "GET",
+        url: `/recommendations/${rec_id}`,
+        contentType: "application/json",
+        data: ''
     });
+
+    ajax.done(function(res){
+        update_form_data(res);
+        flash_message("Success");
+    });
+
+    ajax.fail(function(res){
+        clear_form_data();
+        flash_message(res.responseJSON.message);
+    });
+
+});
+
+
 
     // ****************************************
     // Delete a Pet
     // ****************************************
 
-    $("#delete-btn").click(function () {
+ // Delete a Recommendation
+$("#delete-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+    let rec_id = $("#rec_id").val();
 
-        $("#flash_message").empty();
+    $("#flash_message").empty();
 
-        let ajax = $.ajax({
-            type: "DELETE",
-            url: `/pets/${pet_id}`,
-            contentType: "application/json",
-            data: '',
-        })
-
-        ajax.done(function(res){
-            clear_form_data()
-            flash_message("Pet has been Deleted!")
-        });
-
-        ajax.fail(function(res){
-            flash_message("Server error!")
-        });
+    let ajax = $.ajax({
+        type: "DELETE",
+        url: `/recommendations/${rec_id}`,
+        contentType: "application/json",
+        data: '',
     });
+
+    ajax.done(function(res){
+        clear_form_data();
+        flash_message("Recommendation has been Deleted!");
+    });
+
+    ajax.fail(function(res){
+        flash_message("Server error!");
+    });
+
+});
+
+
 
     // ****************************************
     // Clear the form
     // ****************************************
 
     $("#clear-btn").click(function () {
-        $("#pet_id").val("");
+        $("#rec_id").val("");
         $("#flash_message").empty();
-        clear_form_data()
+        clear_form_data();
     });
+
 
     // ****************************************
     // Search for a Pet
     // ****************************************
+// Search for Recommendations
+$("#search-btn").click(function () {
 
-    $("#search-btn").click(function () {
+    let name = $("#rec_name").val();
+    let product_id = $("#product_id").val();
+    let recommended_product_id = $("#recommended_product_id").val();
+    let rec_type = $("#rec_type").val();
 
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
+    let queryString = "";
 
-        let queryString = ""
-
-        if (name) {
-            queryString += 'name=' + name
+    if (name) {
+        queryString += `name=${name}`;
+    }
+    if (product_id) {
+        if (queryString.length > 0) {
+            queryString += `&product_id=${product_id}`;
+        } else {
+            queryString += `product_id=${product_id}`;
         }
-        if (category) {
-            if (queryString.length > 0) {
-                queryString += '&category=' + category
-            } else {
-                queryString += 'category=' + category
-            }
+    }
+    if (recommended_product_id) {
+        if (queryString.length > 0) {
+            queryString += `&recommended_product_id=${recommended_product_id}`;
+        } else {
+            queryString += `recommended_product_id=${recommended_product_id}`;
         }
-        if (available) {
-            if (queryString.length > 0) {
-                queryString += '&available=' + available
-            } else {
-                queryString += 'available=' + available
-            }
+    }
+    if (rec_type) {
+        if (queryString.length > 0) {
+            queryString += `&recommendation_type=${rec_type}`;
+        } else {
+            queryString += `recommendation_type=${rec_type}`;
         }
+    }
 
-        $("#flash_message").empty();
+    $("#flash_message").empty();
 
-        let ajax = $.ajax({
-            type: "GET",
-            url: `/pets?${queryString}`,
-            contentType: "application/json",
-            data: ''
-        })
-
-        ajax.done(function(res){
-            //alert(res.toSource())
-            $("#search_results").empty();
-            let table = '<table class="table table-striped" cellpadding="10">'
-            table += '<thead><tr>'
-            table += '<th class="col-md-2">ID</th>'
-            table += '<th class="col-md-2">Name</th>'
-            table += '<th class="col-md-2">Category</th>'
-            table += '<th class="col-md-2">Available</th>'
-            table += '<th class="col-md-2">Gender</th>'
-            table += '<th class="col-md-2">Birthday</th>'
-            table += '</tr></thead><tbody>'
-            let firstPet = "";
-            for(let i = 0; i < res.length; i++) {
-                let pet = res[i];
-                table +=  `<tr id="row_${i}"><td>${pet.id}</td><td>${pet.name}</td><td>${pet.category}</td><td>${pet.available}</td><td>${pet.gender}</td><td>${pet.birthday}</td></tr>`;
-                if (i == 0) {
-                    firstPet = pet;
-                }
-            }
-            table += '</tbody></table>';
-            $("#search_results").append(table);
-
-            // copy the first result to the form
-            if (firstPet != "") {
-                update_form_data(firstPet)
-            }
-
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
-
+    let ajax = $.ajax({
+        type: "GET",
+        url: `/recommendations?${queryString}`,
+        contentType: "application/json",
+        data: ''
     });
+
+    ajax.done(function(res){
+        $("#search_results").empty();
+        let table = '<table class="table table-striped" cellpadding="10">';
+        table += '<thead><tr>';
+        table += '<th class="col-md-1">ID</th>';
+        table += '<th class="col-md-2">Name</th>';
+        table += '<th class="col-md-1">Product ID</th>';
+        table += '<th class="col-md-1">Recommended Product ID</th>';
+        table += '<th class="col-md-2">Recommendation Type</th>';
+        table += '<th class="col-md-2">Created Time</th>';
+        table += '<th class="col-md-2">Updated Time</th>';
+        table += '</tr></thead><tbody>';
+        let firstRec = "";
+        for (let i = 0; i < res.length; i++) {
+            let rec = res[i];
+            table += `<tr id="row_${i}"><td>${rec.id}</td><td>${rec.name}</td><td>${rec.product_id}</td><td>${rec.recommended_product_id}</td><td>${rec.recommendation_type}</td><td>${rec.created_at}</td><td>${rec.updated_at}</td></tr>`;
+            if (i == 0) {
+                firstRec = rec;
+            }
+        }
+        table += '</tbody></table>';
+        $("#search_results").append(table);
+
+        // copy the first result to the form
+        if (firstRec != "") {
+            update_form_data(firstRec);
+        }
+
+        flash_message("Success");
+    });
+
+    ajax.fail(function(res){
+        flash_message(res.responseJSON.message);
+    });
+
+});
+
+
 
 })

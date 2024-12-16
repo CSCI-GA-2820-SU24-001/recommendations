@@ -35,15 +35,15 @@ class TestYourResourceService(TestCase):
         app.config["DEBUG"] = False
         # Set up the test database
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
-        api_key = routes.generate_apikey()
-        app.config["API_KEY"] = api_key
+        # api_key = routes.generate_apikey()
+        # app.config["API_KEY"] = api_key
         app.logger.setLevel(logging.CRITICAL)
         app.app_context().push()
 
     def setUp(self):
         """Runs before each test"""
         self.app = app.test_client()
-        self.headers = {"X-Api-Key": app.config["API_KEY"]}
+        # self.headers = {"X-Api-Key": app.config["API_KEY"]}
         db.session.query(Recommendation).delete()  # clean up the last tests
         db.session.commit()
 

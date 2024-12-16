@@ -140,16 +140,16 @@ def generate_apikey():
 ######################################################################
 #  PATH: /recommendations/{id}
 ######################################################################
-@api.route("/recommendations/<int:id>")
-@api.param("id", "The Product Recommendation identifier")
+@api.route("/recommendations/<int:recommendation_id>")
+@api.param("recommendation_id", "The Product Recommendation identifier")
 class RecommendationResource(Resource):
     """
     RecommendationResource class
 
     Allows the manipulation of a single Product Recommendation
-    GET /recommendations/{id} - Returns a Product Recommendation with the given id
-    PUT /recommendations/{id} - Updates a Product Recommendation with the given id
-    DELETE /recommendations/{id} - Deletes a Product Recommendation with the given id
+    GET /recommendations/{recommendation_id} - Returns a Product Recommendation with the given recommendation_id
+    PUT /recommendations/{recommendation_id} - Updates a Product Recommendation with the given recommendation_id
+    DELETE /recommendations/{recommendation_id} - Deletes a Product Recommendation with the given recommendation_id
     """
 
     # ------------------------------------------------------------------
@@ -158,41 +158,41 @@ class RecommendationResource(Resource):
     @api.doc("get_recommendation")
     @api.response(404, "Product Recommendation not found")
     @api.marshal_with(recommendation_model)
-    def get(self, id):
+    def get(self, recommendation_id):
         """
         Retrieve a single Product Recommendation
 
-        This endpoint will return a Product Recommendation based on its id
+        This endpoint will return a Product Recommendation based on its recommendation_id
         """
-        app.logger.info("Request to retrieve a product recommendation with id [%s]", id)
-        recommendation = Recommendation.find(id)
+        app.logger.info("Request to retrieve a product recommendation with id [%s]", recommendation_id)
+        recommendation = Recommendation.find(recommendation_id)
         if not recommendation:
             abort(
                 status.HTTP_404_NOT_FOUND,
-                f"Product Recommendation with id '{id}' was not found.",
+                f"Product Recommendation with id '{recommendation_id}' was not found.",
             )
         return recommendation.serialize(), status.HTTP_200_OK
-
     # ------------------------------------------------------------------
     # UPDATE AN EXISTING PRODUCT RECOMMENDATION
     # ------------------------------------------------------------------
+
     @api.doc("update_recommendation", security="apikey")
     @api.response(404, "Product Recommendation not found")
     @api.response(400, "The posted Product Recommendation data was not valid")
     @api.expect(recommendation_model)
     @api.marshal_with(recommendation_model)
-    def put(self, id):
+    def put(self, recommendation_id):
         """
         Update a Product Recommendation
 
         This endpoint will update a Product Recommendation based on the body that is posted
         """
         app.logger.info("Request to update a product recommendation with id [%s]", id)
-        recommendation = Recommendation.find(id)
+        recommendation = Recommendation.find(recommendation_id)
         if not recommendation:
             abort(
                 status.HTTP_404_NOT_FOUND,
-                f"Product Recommendation with id '{id}' was not found.",
+                f"Product Recommendation with id '{recommendation_id}' was not found.",
             )
         app.logger.debug("Payload = %s", api.payload)
         data = api.payload
@@ -206,17 +206,17 @@ class RecommendationResource(Resource):
     # ------------------------------------------------------------------
     @api.doc("delete_recommendation", security="apikey")
     @api.response(204, "Product Recommendation deleted")
-    def delete(self, id):
+    def delete(self, recommendation_id):
         """
         Delete a Product Recommendation
 
         This endpoint will delete a Product Recommendation based on the id specified in the path
         """
-        app.logger.info("Request to delete a product recommendation with id [%s]", id)
-        recommendation = Recommendation.find(id)
+        app.logger.info("Request to delete a product recommendation with id [%s]", recommendation_id)
+        recommendation = Recommendation.find(recommendation_id)
         if recommendation:
             recommendation.delete()
-            app.logger.info("Product Recommendation with id [%s] was deleted", id)
+            app.logger.info("Product Recommendation with id [%s] was deleted", recommendation_id)
 
         return "", status.HTTP_204_NO_CONTENT
 
